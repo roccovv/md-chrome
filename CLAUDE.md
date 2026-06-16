@@ -85,3 +85,4 @@ npm run preview
 - 需要 Node.js 18+ 环境
 - Tailwind CSS 采用 JIT 模式
 - 图标库使用 Lucide React（轻量级）
+- pnpm 作为依赖管理工具
