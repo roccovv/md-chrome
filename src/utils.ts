@@ -1,5 +1,23 @@
 import { Settings, SearchEngine } from './types';
 
+/**
+ * 从 URL 提取域名并生成 Favicon.im API 地址
+ * @param url 网站 URL
+ * @param larger 是否使用高清版本（最大 256px）
+ * @returns Favicon.im API URL
+ */
+export const getLogoUrl = (url: string, larger: boolean = true): string => {
+  try {
+    const hostname = new URL(url).hostname;
+    return larger
+      ? `https://favicon.im/${hostname}?larger=true`
+      : `https://favicon.im/${hostname}`;
+  } catch (e) {
+    // URL 解析失败，返回空字符串
+    return '';
+  }
+};
+
 const DEFAULT_SEARCH_ENGINES: SearchEngine[] = [
   {
     name: 'Bing',
@@ -47,25 +65,25 @@ const DEFAULT_SETTINGS: Settings = {
       id: '1',
       name: '豆包',
       url: 'https://www.doubao.com',
-      icon: 'https://lf-cdn.doubao.com/obj/static/common/image/logo.b189b5f9.svg'
+      icon: 'https://favicon.im/www.doubao.com?larger=true'
     },
     {
       id: '2',
       name: 'DeepSeek',
       url: 'https://chat.deepseek.com',
-      icon: 'https://chat.deepseek.com/favicon.ico'
+      icon: 'https://favicon.im/chat.deepseek.com?larger=true'
     },
     {
       id: '3',
       name: '文心一言',
       url: 'https://yiyan.baidu.com',
-      icon: 'https://nlp-eb.cdn.bcebos.com/logo/favicon.ico'
+      icon: 'https://favicon.im/yiyan.baidu.com?larger=true'
     },
     {
       id: '4',
       name: '通义千问',
       url: 'https://www.qianwen.com',
-      icon: 'https://img.alicdn.com/imgextra/i3/O1CN01dGJZbc1t6P8yGK4Ow_!!6000000005852-55-tps-87-78.svg'
+      icon: 'https://favicon.im/www.qianwen.com?larger=true'
     }
   ],
   quickLinks: [
@@ -73,19 +91,19 @@ const DEFAULT_SETTINGS: Settings = {
       id: '1',
       title: '小红书',
       url: 'https://www.xiaohongshu.com',
-      icon: 'https://www.xiaohongshu.com/favicon.ico'
+      icon: 'https://favicon.im/www.xiaohongshu.com?larger=true'
     },
     {
       id: '2',
       title: '微博',
       url: 'https://weibo.com',
-      icon: 'https://weibo.com/favicon.ico'
+      icon: 'https://favicon.im/weibo.com?larger=true'
     },
     {
       id: '3',
       title: 'GitHub',
       url: 'https://github.com',
-      icon: 'https://github.githubassets.com/favicons/favicon.svg'
+      icon: 'https://favicon.im/github.com?larger=true'
     }
   ]
 };

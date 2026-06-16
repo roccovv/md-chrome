@@ -9,6 +9,7 @@
 - **图标**: Lucide React
 - **构建工具**: Vite 5
 - **存储**: Chrome Storage API / LocalStorage
+- **Logo 服务**: Favicon.im (<https://favicon.im>)
 
 ## 项目结构
 
@@ -21,7 +22,7 @@ src/
 ├── App.tsx             # 主应用组件
 ├── main.tsx            # 应用入口
 ├── types.ts            # TypeScript 类型定义
-├── utils.ts            # 工具函数（设置存储）
+├── utils.ts            # 工具函数（设置存储、Logo API）
 └── index.css           # 全局样式
 ```
 
@@ -39,15 +40,43 @@ src/
 - 响应式搜索框设计
 
 ### 3. 工具区（快捷链接）
+
 - 自定义快捷链接
 - 支持 Emoji 图标
 - 可编辑、删除快捷方式
 - 响应式网格布局
+- **Logo 自动获取**: 使用 Favicon.im API 自动获取网站 Logo，无需手动维护
 
 ### 4. 设置面板
+
 - 壁纸设置
 - 搜索引擎切换
 - 滑动式面板设计
+
+## Logo 服务
+
+项目使用 **Favicon.im** (<https://favicon.im>) 来自动获取网站 Logo：
+
+- ✅ 纯免费，无需 API Key
+- ✅ 月处理 3000 万+ 请求
+- ✅ 99.9% 可用性保证
+- ✅ Cloudflare 全球 CDN 加速
+- ✅ 响应时间 <100ms
+- ✅ 支持高清版本（最大 256px）
+
+使用方式：
+
+```typescript
+import { getLogoUrl } from './utils';
+
+// 从 URL 自动提取域名并生成 Favicon.im API 地址
+const logoUrl = getLogoUrl('https://github.com'); 
+// 返回: https://favicon.im/github.com?larger=true
+
+// 使用标准版本（不加参数）
+const logoUrl = getLogoUrl('https://github.com', false);
+// 返回: https://favicon.im/github.com
+```
 
 ## 开发命令
 

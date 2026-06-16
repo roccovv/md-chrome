@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { QuickLink } from '../types';
 import { PRESET_WEBSITES } from '../presets';
 import { DEFAULT_ICONS } from '../icons';
+import { getLogoUrl } from '../utils';
 
 interface QuickLinksProps {
   links: QuickLink[];
@@ -81,23 +82,13 @@ export default function QuickLinks({ links, onLinksChange }: QuickLinksProps) {
         const traverseBookmarks = (nodes: chrome.bookmarks.BookmarkTreeNode[]) => {
           nodes.forEach(node => {
             if (node.url) {
-              try {
-                // 使用百度的 favicon 服务（国内稳定）
-                const hostname = new URL(node.url).hostname;
-                const faviconUrl = `https://api.iowen.cn/favicon/${hostname}.png`;
-                bookmarkList.push({
-                  title: node.title || 'Untitled',
-                  url: node.url,
-                  icon: faviconUrl,
-                });
-              } catch (e) {
-                // URL 解析失败，使用默认图标
-                bookmarkList.push({
-                  title: node.title || 'Untitled',
-                  url: node.url,
-                  icon: DEFAULT_ICONS.LINK_SMALL,
-                });
-              }
+              // 使用 Favicon.im API（月处理 3000 万+ 请求，99.9% 可用性，Cloudflare 加速）
+              const logoUrl = getLogoUrl(node.url);
+              bookmarkList.push({
+                title: node.title || 'Untitled',
+                url: node.url,
+                icon: logoUrl || DEFAULT_ICONS.LINK_SMALL,
+              });
             }
             if (node.children) {
               // 是文件夹，继续遍历
