@@ -105,7 +105,8 @@ const DEFAULT_SETTINGS: Settings = {
       url: 'https://github.com',
       icon: 'https://favicon.im/github.com?larger=true'
     }
-  ]
+  ],
+  stickyNotes: []
 };
 
 export const getSettings = async (): Promise<Settings> => {

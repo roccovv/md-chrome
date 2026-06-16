@@ -5,6 +5,7 @@ import QuickLinks from './components/QuickLinks';
 import AITools from './components/AITools';
 import SettingsPanel from './components/SettingsPanel';
 import Weather from './components/Weather';
+import StickyNotes from './components/StickyNotes';
 import { Settings } from './types';
 import { getSettings, saveSettings, DEFAULT_SEARCH_ENGINES } from './utils';
 
@@ -125,6 +126,14 @@ function App() {
           onClose={() => setShowSettings(false)}
         />
       )}
+
+      {/* 便利贴 */}
+      <StickyNotes
+        notes={settings.stickyNotes || []}
+        onNotesChange={(notes) =>
+          handleSettingsChange({ ...settings, stickyNotes: notes })
+        }
+      />
     </div>
   );
 }

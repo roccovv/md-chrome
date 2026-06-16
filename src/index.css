@@ -22,3 +22,25 @@ html, body {
   width: 100vw;
   height: 100vh;
 }
+
+/* 便利贴撕毁动画 */
+@keyframes rip {
+  0% {
+    transform: rotate(-1deg);
+    opacity: 1;
+  }
+  30% {
+    transform: rotate(5deg) scale(1.05);
+  }
+  60% {
+    transform: rotate(-10deg) translateY(-20px);
+  }
+  100% {
+    transform: rotate(15deg) translateY(100vh) translateX(50px);
+    opacity: 0;
+  }
+}
+
+.ripping {
+  animation: rip 0.6s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
