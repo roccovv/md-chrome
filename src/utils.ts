@@ -41,30 +41,31 @@ const DEFAULT_SETTINGS: Settings = {
   searchEngine: DEFAULT_SEARCH_ENGINES[0],
   customSearchEngines: [],
   blurLevel: 2, // 默认轻微模糊
+  weatherCity: '深圳', // 默认城市
   aiTools: [
     {
       id: '1',
       name: '豆包',
       url: 'https://www.doubao.com',
-      icon: '🫘'
+      icon: 'https://lf-cdn.doubao.com/obj/static/common/image/logo.b189b5f9.svg'
     },
     {
       id: '2',
       name: 'DeepSeek',
       url: 'https://chat.deepseek.com',
-      icon: '🔍'
+      icon: 'https://chat.deepseek.com/favicon.ico'
     },
     {
       id: '3',
       name: '文心一言',
       url: 'https://yiyan.baidu.com',
-      icon: '🎯'
+      icon: 'https://nlp-eb.cdn.bcebos.com/logo/favicon.ico'
     },
     {
       id: '4',
       name: '通义千问',
       url: 'https://www.qianwen.com',
-      icon: '💡'
+      icon: 'https://img.alicdn.com/imgextra/i3/O1CN01dGJZbc1t6P8yGK4Ow_!!6000000005852-55-tps-87-78.svg'
     }
   ],
   quickLinks: [
@@ -72,19 +73,19 @@ const DEFAULT_SETTINGS: Settings = {
       id: '1',
       title: '小红书',
       url: 'https://www.xiaohongshu.com',
-      icon: '📕'
+      icon: 'https://www.xiaohongshu.com/favicon.ico'
     },
     {
       id: '2',
       title: '微博',
       url: 'https://weibo.com',
-      icon: '🔶'
+      icon: 'https://weibo.com/favicon.ico'
     },
     {
       id: '3',
       title: 'GitHub',
       url: 'https://github.com',
-      icon: '🐙'
+      icon: 'https://github.githubassets.com/favicons/favicon.svg'
     }
   ]
 };

@@ -31,4 +31,5 @@ export interface Settings {
   customSearchEngines?: SearchEngine[];
   blurLevel?: number; // 0-20, 背景模糊程度
   aiTools?: AITool[];
+  weatherCity?: string; // 天气城市
 }

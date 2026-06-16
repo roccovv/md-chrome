@@ -10,6 +10,12 @@
     "storage",
     "bookmarks"
   ],
+  "host_permissions": [
+    "https://devapi.qweather.com/*",
+    "https://api.qweather.com/*",
+    "https://geoapi.qweather.com/*",
+    "https://*.qweatherapi.com/*"
+  ],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

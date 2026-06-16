@@ -4,6 +4,7 @@ import SearchBar from './components/SearchBar';
 import QuickLinks from './components/QuickLinks';
 import AITools from './components/AITools';
 import SettingsPanel from './components/SettingsPanel';
+import Weather from './components/Weather';
 import { Settings } from './types';
 import { getSettings, saveSettings, DEFAULT_SEARCH_ENGINES } from './utils';
 
@@ -61,14 +62,25 @@ function App() {
         }}
       />
 
-      {/* 设置按钮 */}
-      <button
-        onClick={() => setShowSettings(!showSettings)}
-        className="absolute top-6 right-6 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition-all duration-200 text-white shadow-lg"
-        aria-label="设置"
-      >
-        <SettingsIcon size={24} />
-      </button>
+      {/* 右上角功能区 */}
+      <div className="absolute top-6 right-6 z-20 flex items-center gap-3">
+        {/* 天气组件 */}
+        <Weather
+          city={settings.weatherCity || '深圳'}
+          onCityChange={(city) =>
+            handleSettingsChange({ ...settings, weatherCity: city })
+          }
+        />
+
+        {/* 设置按钮 */}
+        <button
+          onClick={() => setShowSettings(!showSettings)}
+          className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition-all duration-200 text-white shadow-lg"
+          aria-label="设置"
+        >
+          <SettingsIcon size={24} />
+        </button>
+      </div>
 
       {/* 主内容区 */}
       <div className="relative z-10 w-full max-w-5xl px-8 space-y-12">
