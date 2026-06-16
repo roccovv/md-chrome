@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { X, Trash2, Pin } from 'lucide-react';
 import { StickyNote as StickyNoteType, TodoItem } from '../types';
 
@@ -17,13 +17,63 @@ const colorClasses = {
   purple: 'bg-gradient-to-br from-purple-200 to-purple-300',
 };
 
+const NOTE_WIDTH = 256;
+const NOTE_MIN_HEIGHT = 320;
+
+const clampPosition = (
+  position: { x: number; y: number },
+  size: { width: number; height: number } = { width: NOTE_WIDTH, height: NOTE_MIN_HEIGHT }
+) => ({
+  x: Math.max(0, Math.min(window.innerWidth - size.width, position.x)),
+  y: Math.max(0, Math.min(window.innerHeight - size.height, position.y)),
+});
+
 export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }: StickyNoteProps) {
   const [isRipping, setIsRipping] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragPosition, setDragPosition] = useState(note.position);
   const noteRef = useRef<HTMLDivElement>(null);
+  const latestNoteRef = useRef(note);
+  const latestDragPositionRef = useRef(note.position);
+  const animationFrameRef = useRef<number | null>(null);
 
-  const handlePinMouseDown = (e: React.MouseEvent) => {
+  useEffect(() => {
+    latestNoteRef.current = note;
+  });
+
+  useEffect(() => {
+    if (!isDragging) {
+      latestDragPositionRef.current = note.position;
+      setDragPosition(note.position);
+    }
+  }, [isDragging, note.position]);
+
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
+
+  const scheduleDragPosition = (position: { x: number; y: number }) => {
+    latestDragPositionRef.current = position;
+
+    if (animationFrameRef.current !== null) {
+      return;
+    }
+
+    animationFrameRef.current = requestAnimationFrame(() => {
+      animationFrameRef.current = null;
+      setDragPosition(latestDragPositionRef.current);
+    });
+  };
+
+  const handlePinPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (e.button !== 0) {
+      return;
+    }
+
     e.stopPropagation();
     e.preventDefault();
     setIsDragging(true);
@@ -31,30 +81,36 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
 
     const startX = e.clientX;
     const startY = e.clientY;
-    const startPos = { ...note.position };
+    const startPos = { ...latestDragPositionRef.current };
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
+    const handlePointerMove = (moveEvent: PointerEvent) => {
       moveEvent.preventDefault();
       const deltaX = moveEvent.clientX - startX;
       const deltaY = moveEvent.clientY - startY;
-
-      const newX = Math.max(0, Math.min(window.innerWidth - 250, startPos.x + deltaX));
-      const newY = Math.max(0, Math.min(window.innerHeight - 300, startPos.y + deltaY));
-
-      // 立即更新本地位置，提升流畅度
-      setDragPosition({ x: newX, y: newY });
+      scheduleDragPosition(
+        clampPosition(
+          { x: startPos.x + deltaX, y: startPos.y + deltaY },
+          {
+            width: noteRef.current?.offsetWidth ?? NOTE_WIDTH,
+            height: noteRef.current?.offsetHeight ?? NOTE_MIN_HEIGHT,
+          }
+        )
+      );
     };
 
-    const handleMouseUp = () => {
+    const handlePointerUp = () => {
       setIsDragging(false);
+      const nextPosition = latestDragPositionRef.current;
       // 拖动结束后再更新到父组件
-      onUpdate({ ...note, position: dragPosition, updatedAt: Date.now() });
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      onUpdate({ ...latestNoteRef.current, position: nextPosition, updatedAt: Date.now() });
+      document.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerup', handlePointerUp);
+      document.removeEventListener('pointercancel', handlePointerUp);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('pointermove', handlePointerMove);
+    document.addEventListener('pointerup', handlePointerUp);
+    document.addEventListener('pointercancel', handlePointerUp);
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,21 +164,26 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
         colorClasses[note.color]
       } ${isRipping ? 'ripping' : ''}`}
       style={{
-        left: dragPosition.x,
-        top: dragPosition.y,
+        left: 0,
+        top: 0,
+        '--note-x': `${dragPosition.x}px`,
+        '--note-y': `${dragPosition.y}px`,
         zIndex: note.zIndex,
-        transform: isDragging ? 'rotate(0deg) scale(1.02)' : 'rotate(-1deg)',
+        transform: `translate3d(${dragPosition.x}px, ${dragPosition.y}px, 0) ${
+          isDragging ? 'rotate(0deg) scale(1.015)' : 'rotate(-1deg)'
+        }`,
+        willChange: isDragging ? 'transform' : 'auto',
         boxShadow: isDragging
           ? '0 10px 25px rgba(0, 0, 0, 0.15)'
           : '0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06), inset 0 -2px 4px rgba(0, 0, 0, 0.05)',
-      }}
+      } as CSSProperties}
     >
       {/* 头部 - 带钉子拖动手柄 */}
-      <div className="flex items-center gap-2 p-3 border-b border-gray-400/30">
+      <div className="grid grid-cols-[2rem_minmax(0,1fr)_2rem] items-center gap-2 p-3 border-b border-gray-400/30">
         {/* 钉子拖动手柄 */}
         <button
-          onMouseDown={handlePinMouseDown}
-          className="shrink-0 p-1 hover:bg-black/10 rounded transition-colors cursor-grab active:cursor-grabbing"
+          onPointerDown={handlePinPointerDown}
+          className="h-8 w-8 grid place-items-center hover:bg-black/10 rounded transition-colors cursor-grab active:cursor-grabbing touch-none"
           aria-label="拖动便利贴"
           title="按住拖动"
         >
@@ -139,7 +200,7 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
 
         <button
           onClick={handleDelete}
-          className="shrink-0 p-1 hover:bg-black/10 rounded transition-colors"
+          className="h-8 w-8 grid place-items-center hover:bg-black/10 rounded transition-colors"
           aria-label="删除便利贴"
         >
           <Trash2 size={16} className="text-gray-700" />
@@ -160,17 +221,19 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
       <div className="px-3 pb-3 space-y-2">
         <div className="text-xs text-gray-600 font-semibold mb-1">代办事项</div>
         {note.todos.map((todo) => (
-          <div key={todo.id} className="flex items-start gap-2 group">
+          <div key={todo.id} className="grid grid-cols-[auto_minmax(0,1fr)_1.75rem] items-start gap-2 group">
             <input
               type="checkbox"
               checked={todo.completed}
               onChange={() => toggleTodo(todo.id)}
-              className="mt-1 cursor-pointer shrink-0"
+              className={`mt-1 cursor-pointer shrink-0 ${
+                todo.completed ? 'accent-emerald-700' : 'accent-gray-700'
+              }`}
             />
             <input
               type="text"
               className={`flex-1 min-w-0 bg-transparent text-sm placeholder-gray-500 focus:outline-none ${
-                todo.completed ? 'line-through text-green-700' : 'text-gray-800'
+                todo.completed ? 'line-through text-emerald-800/75' : 'text-gray-800'
               }`}
               value={todo.text}
               onChange={(e) => updateTodoText(todo.id, e.target.value)}
@@ -178,7 +241,7 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
             />
             <button
               onClick={() => deleteTodo(todo.id)}
-              className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-black/10 rounded"
+              className="h-7 w-7 grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/10 rounded"
               aria-label="删除代办"
             >
               <X size={14} className="text-gray-700" />

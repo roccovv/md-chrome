@@ -10,6 +10,8 @@ interface StickyNotesProps {
 
 const COLORS: StickyNoteType['color'][] = ['yellow', 'pink', 'blue', 'green', 'purple'];
 const MAX_NOTES = 20;
+const NOTE_WIDTH = 256;
+const NOTE_MIN_HEIGHT = 320;
 
 export default function StickyNotes({ notes, onNotesChange }: StickyNotesProps) {
   // 处理窗口大小变化，确保便利贴不会跑出屏幕
@@ -18,8 +20,8 @@ export default function StickyNotes({ notes, onNotesChange }: StickyNotesProps) 
       const updatedNotes = notes.map((note) => ({
         ...note,
         position: {
-          x: Math.min(note.position.x, window.innerWidth - 250),
-          y: Math.min(note.position.y, window.innerHeight - 300),
+          x: Math.max(0, Math.min(note.position.x, window.innerWidth - NOTE_WIDTH)),
+          y: Math.max(0, Math.min(note.position.y, window.innerHeight - NOTE_MIN_HEIGHT)),
         },
       }));
       if (JSON.stringify(updatedNotes) !== JSON.stringify(notes)) {

@@ -26,17 +26,17 @@ html, body {
 /* 便利贴撕毁动画 */
 @keyframes rip {
   0% {
-    transform: rotate(-1deg);
+    transform: translate3d(var(--note-x, 0), var(--note-y, 0), 0) rotate(-1deg);
     opacity: 1;
   }
   30% {
-    transform: rotate(5deg) scale(1.05);
+    transform: translate3d(var(--note-x, 0), var(--note-y, 0), 0) rotate(5deg) scale(1.05);
   }
   60% {
-    transform: rotate(-10deg) translateY(-20px);
+    transform: translate3d(var(--note-x, 0), calc(var(--note-y, 0) - 20px), 0) rotate(-10deg);
   }
   100% {
-    transform: rotate(15deg) translateY(100vh) translateX(50px);
+    transform: translate3d(calc(var(--note-x, 0) + 50px), 100vh, 0) rotate(15deg);
     opacity: 0;
   }
 }
