@@ -33,6 +33,7 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
   const [isDragging, setIsDragging] = useState(false);
   const [dragPosition, setDragPosition] = useState(note.position);
   const noteRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const latestNoteRef = useRef(note);
   const latestDragPositionRef = useRef(note.position);
   const animationFrameRef = useRef<number | null>(null);
@@ -121,6 +122,15 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
     onUpdate({ ...note, content: e.target.value, updatedAt: Date.now() });
   };
 
+  // 自动调整 textarea 高度
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [note.content]);
+
   const addTodo = () => {
     const newTodo: TodoItem = {
       id: Date.now().toString(),
@@ -160,7 +170,7 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
   return (
     <div
       ref={noteRef}
-      className={`fixed w-64 min-h-80 flex flex-col rounded-lg shadow-lg transition-shadow duration-200 select-none ${
+      className={`fixed w-64 flex flex-col rounded-lg shadow-lg transition-shadow duration-200 select-none ${
         colorClasses[note.color]
       } ${isRipping ? 'ripping' : ''}`}
       style={{
@@ -192,7 +202,7 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
 
         <input
           type="text"
-          className="flex-1 min-w-0 bg-transparent text-gray-800 font-semibold placeholder-gray-500 focus:outline-none"
+          className="flex-1 min-w-0 bg-transparent text-gray-800 font-semibold placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600/40 rounded px-1 caret-gray-800"
           value={note.title}
           onChange={handleTitleChange}
           placeholder="便利贴标题"
@@ -208,12 +218,14 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
       </div>
 
       {/* 自由文本区域 */}
-      <div className="flex-1 p-3">
+      <div className="p-3">
         <textarea
-          className="w-full h-32 bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none resize-none"
+          ref={textareaRef}
+          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600/40 rounded p-1 resize-none caret-gray-800 min-h-[8rem] overflow-hidden"
           value={note.content || ''}
           onChange={handleContentChange}
           placeholder="在这里随便写点什么..."
+          rows={1}
         />
       </div>
 
@@ -232,7 +244,7 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
             />
             <input
               type="text"
-              className={`flex-1 min-w-0 bg-transparent text-sm placeholder-gray-500 focus:outline-none ${
+              className={`flex-1 min-w-0 bg-transparent text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600/40 rounded px-1 caret-gray-800 ${
                 todo.completed ? 'line-through text-emerald-800/75' : 'text-gray-800'
               }`}
               value={todo.text}

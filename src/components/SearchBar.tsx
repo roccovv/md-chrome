@@ -71,7 +71,7 @@ export default function SearchBar({ searchEngine, allEngines, onEngineChange }: 
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={searchEngine.placeholder}
-          className="w-full pl-32 pr-12 py-4 text-lg bg-white/90 backdrop-blur-md rounded-full shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200"
+          className="w-full pl-32 pr-12 py-3 text-base bg-white/90 backdrop-blur-md rounded-full shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200"
         />
       </div>
     </form>

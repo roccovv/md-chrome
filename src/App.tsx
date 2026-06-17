@@ -84,10 +84,10 @@ function App() {
       </div>
 
       {/* 主内容区 */}
-      <div className="relative z-10 w-full max-w-5xl px-8 space-y-12">
+      <div className="relative z-10 w-full max-w-4xl px-6 space-y-8">
         {/* 搜索区 */}
-        <div className="text-center space-y-6">
-          <h1 className="text-5xl font-bold text-white drop-shadow-lg mb-8">
+        <div className="text-center space-y-4">
+          <h1 className="text-3xl font-bold text-white drop-shadow-lg mb-6">
             {new Date().getHours() < 12
               ? '早上好'
               : new Date().getHours() < 18

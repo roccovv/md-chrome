@@ -164,13 +164,13 @@ export default function QuickLinks({ links, onLinksChange }: QuickLinksProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <Link size={20} className="text-blue-400" />
-        <h2 className="text-lg font-semibold text-white">快捷方式</h2>
+        <Link size={18} className="text-blue-400" />
+        <h2 className="text-base font-semibold text-white">快捷方式</h2>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
         {links.map((link, index) => (
           <div
             key={link.id}
@@ -183,23 +183,23 @@ export default function QuickLinks({ links, onLinksChange }: QuickLinksProps) {
             {/* 拖拽手柄 */}
             <div className="absolute -top-2 -left-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
               <div className="p-1 bg-gray-700 rounded-full shadow-lg cursor-move">
-                <GripVertical size={14} className="text-white" />
+                <GripVertical size={12} className="text-white" />
               </div>
             </div>
 
             <a
               href={link.url}
-              className="flex flex-col items-center justify-center p-4 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+              className="flex flex-col items-center justify-center p-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
             >
               <img
                 src={link.icon || DEFAULT_ICONS.LINK}
                 alt={link.title}
-                className="w-10 h-10 mb-2 rounded-lg object-cover"
+                className="w-8 h-8 mb-1.5 rounded-lg object-cover"
                 onError={(e) => {
                   e.currentTarget.src = DEFAULT_ICONS.LINK;
                 }}
               />
-              <div className="text-sm text-white font-medium text-center truncate w-full">
+              <div className="text-xs text-white font-medium text-center truncate w-full">
                 {link.title}
               </div>
             </a>
@@ -228,10 +228,10 @@ export default function QuickLinks({ links, onLinksChange }: QuickLinksProps) {
             // 打开时自动加载书签
             loadBookmarks();
           }}
-          className="flex flex-col items-center justify-center p-4 bg-white/5 hover:bg-white/10 backdrop-blur-md rounded-2xl transition-all duration-200 border-2 border-dashed border-white/30 hover:border-white/50"
+          className="flex flex-col items-center justify-center p-3 bg-white/5 hover:bg-white/10 backdrop-blur-md rounded-xl transition-all duration-200 border-2 border-dashed border-white/30 hover:border-white/50"
         >
-          <Plus className="text-white mb-2" size={32} />
-          <div className="text-sm text-white font-medium">添加</div>
+          <Plus className="text-white mb-1.5" size={24} />
+          <div className="text-xs text-white font-medium">添加</div>
         </button>
       </div>
 
