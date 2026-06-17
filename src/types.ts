@@ -41,6 +41,8 @@ export interface StickyNote {
   zIndex: number;
   createdAt: number;
   updatedAt: number;
+  textColor?: string; // 文本颜色
+  fontSize?: 'small' | 'medium' | 'large'; // 字号
 }
 
 export interface Settings {

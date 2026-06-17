@@ -1,5 +1,5 @@
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
-import { X, Trash2, Pin } from 'lucide-react';
+import { X, Trash2, Pin, Palette, Type } from 'lucide-react';
 import { StickyNote as StickyNoteType, TodoItem } from '../types';
 
 interface StickyNoteProps {
@@ -32,6 +32,8 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
   const [isRipping, setIsRipping] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragPosition, setDragPosition] = useState(note.position);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showFontSizePicker, setShowFontSizePicker] = useState(false);
   const noteRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const latestNoteRef = useRef(note);
@@ -167,6 +169,24 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
     }, 600);
   };
 
+  const handleTextColorChange = (color: string) => {
+    onUpdate({ ...note, textColor: color, updatedAt: Date.now() });
+    setShowColorPicker(false);
+  };
+
+  const handleFontSizeChange = (size: 'small' | 'medium' | 'large') => {
+    onUpdate({ ...note, fontSize: size, updatedAt: Date.now() });
+    setShowFontSizePicker(false);
+  };
+
+  const textColor = note.textColor || '#1f2937';
+  const fontSize = note.fontSize || 'medium';
+  const fontSizeClasses = {
+    small: 'text-xs',
+    medium: 'text-sm',
+    large: 'text-base',
+  };
+
   return (
     <div
       ref={noteRef}
@@ -188,40 +208,134 @@ export default function StickyNote({ note, onUpdate, onDelete, onBringToFront }:
           : '0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06), inset 0 -2px 4px rgba(0, 0, 0, 0.05)',
       } as CSSProperties}
     >
-      {/* 头部 - 带钉子拖动手柄 */}
-      <div className="grid grid-cols-[2rem_minmax(0,1fr)_2rem] items-center gap-2 p-3 border-b border-gray-400/30">
-        {/* 钉子拖动手柄 */}
-        <button
-          onPointerDown={handlePinPointerDown}
-          className="h-8 w-8 grid place-items-center hover:bg-black/10 rounded transition-colors cursor-grab active:cursor-grabbing touch-none"
-          aria-label="拖动便利贴"
-          title="按住拖动"
-        >
-          <Pin size={18} className="text-gray-700" />
-        </button>
+      {/* 头部 - 两行布局 */}
+      <div className="p-3 border-b border-gray-400/30 space-y-2">
+        {/* 第一行：钉子 + 标题 + 删除 */}
+        <div className="flex items-center gap-2">
+          <button
+            onPointerDown={handlePinPointerDown}
+            className="h-8 w-8 grid place-items-center hover:bg-black/10 rounded transition-colors cursor-grab active:cursor-grabbing touch-none shrink-0"
+            aria-label="拖动便利贴"
+            title="按住拖动"
+          >
+            <Pin size={18} className="text-gray-700" />
+          </button>
 
-        <input
-          type="text"
-          className="flex-1 min-w-0 bg-transparent text-gray-800 font-semibold placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600/40 rounded px-1 caret-gray-800"
-          value={note.title}
-          onChange={handleTitleChange}
-          placeholder="便利贴标题"
-        />
+          <input
+            type="text"
+            className="flex-1 min-w-0 bg-transparent text-gray-800 font-semibold placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600/40 rounded px-1 caret-gray-800"
+            value={note.title}
+            onChange={handleTitleChange}
+            placeholder="便利贴标题"
+          />
 
-        <button
-          onClick={handleDelete}
-          className="h-8 w-8 grid place-items-center hover:bg-black/10 rounded transition-colors"
-          aria-label="删除便利贴"
-        >
-          <Trash2 size={16} className="text-gray-700" />
-        </button>
+          <button
+            onClick={handleDelete}
+            className="h-8 w-8 grid place-items-center hover:bg-black/10 rounded transition-colors shrink-0"
+            aria-label="删除便利贴"
+          >
+            <Trash2 size={16} className="text-gray-700" />
+          </button>
+        </div>
+
+        {/* 第二行：格式化工具栏 */}
+        <div className="flex items-center gap-1">
+          {/* 字号选择 */}
+          <div className="relative">
+            <button
+              onClick={() => setShowFontSizePicker(!showFontSizePicker)}
+              className="h-7 px-2 flex items-center gap-1 hover:bg-black/10 rounded transition-colors text-xs text-gray-700"
+              aria-label="选择字号"
+              title="字号"
+            >
+              <Type size={14} />
+              <span>字号</span>
+            </button>
+            {showFontSizePicker && (
+              <>
+                <div
+                  className="fixed inset-0 z-20"
+                  onClick={() => setShowFontSizePicker(false)}
+                />
+                <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl py-1 z-30 min-w-[100px]">
+                  <button
+                    onClick={() => handleFontSizeChange('small')}
+                    className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-100 ${
+                      fontSize === 'small' ? 'bg-blue-50 text-blue-600' : ''
+                    }`}
+                  >
+                    小号
+                  </button>
+                  <button
+                    onClick={() => handleFontSizeChange('medium')}
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 ${
+                      fontSize === 'medium' ? 'bg-blue-50 text-blue-600' : ''
+                    }`}
+                  >
+                    中号
+                  </button>
+                  <button
+                    onClick={() => handleFontSizeChange('large')}
+                    className={`w-full text-left px-3 py-2 text-base hover:bg-gray-100 ${
+                      fontSize === 'large' ? 'bg-blue-50 text-blue-600' : ''
+                    }`}
+                  >
+                    大号
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* 颜色选择 */}
+          <div className="relative">
+            <button
+              onClick={() => setShowColorPicker(!showColorPicker)}
+              className="h-7 px-2 flex items-center gap-1 hover:bg-black/10 rounded transition-colors text-xs text-gray-700"
+              aria-label="选择文本颜色"
+              title="文本颜色"
+            >
+              <Palette size={14} />
+              <span>颜色</span>
+            </button>
+            {showColorPicker && (
+              <>
+                <div
+                  className="fixed inset-0 z-20"
+                  onClick={() => setShowColorPicker(false)}
+                />
+                <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl p-2 z-30 w-44">
+                  <div className="grid grid-cols-5 gap-1.5">
+                    {[
+                      '#1f2937', '#ef4444', '#f59e0b', '#eab308', '#10b981',
+                      '#14b8a6', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899',
+                      '#f43f5e', '#64748b', '#78716c', '#a3a3a3', '#000000'
+                    ].map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => handleTextColorChange(color)}
+                          className={`w-6 h-6 rounded-full border-2 hover:scale-110 transition-transform ${
+                            textColor === color ? 'border-gray-800 ring-2 ring-gray-400' : 'border-gray-300'
+                          }`}
+                          style={{ backgroundColor: color }}
+                          aria-label={`选择颜色 ${color}`}
+                        />
+                      )
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* 自由文本区域 */}
       <div className="p-3">
         <textarea
           ref={textareaRef}
-          className="w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600/40 rounded p-1 resize-none caret-gray-800 min-h-[8rem] overflow-hidden"
+          className={`w-full bg-transparent ${fontSizeClasses[fontSize]} placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600/40 rounded p-1 resize-none min-h-[8rem] overflow-hidden`}
+          style={{ color: textColor, caretColor: textColor }}
           value={note.content || ''}
           onChange={handleContentChange}
           placeholder="在这里随便写点什么..."
